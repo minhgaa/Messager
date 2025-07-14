@@ -28,7 +28,7 @@ export default function EditProfileModal({ isOpen, onClose }) {
 
   const [profileForm, setProfileForm] = useState({
     name: user?.name || '',
-    username: user?.username || '',
+    username: user?.userName || '',
     avatarURL: user?.avatarURL || '',
   })
 
@@ -42,7 +42,6 @@ export default function EditProfileModal({ isOpen, onClose }) {
   const handleProfileSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-
     try {
       const success = await updateProfile(profileForm)
       if (success) {
@@ -116,8 +115,8 @@ export default function EditProfileModal({ isOpen, onClose }) {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors relative ${activeTab === tab.id
-                      ? 'text-white'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    ? 'text-white'
+                    : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
                     }`}
                 >
                   {activeTab === tab.id && (
@@ -158,7 +157,11 @@ export default function EditProfileModal({ isOpen, onClose }) {
                 <div className="flex justify-center items-center">
                   <div className="relative">
                     <img
-                      src={user?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
+                      src={
+                        profileForm.avatarURL ||
+                        user?.avatar ||
+                        'https://api.dicebear.com/7.x/avataaars/svg?seed=default'
+                      }
                       alt={user?.name}
                       className={`w-24 h-24 rounded-full border-4 border-white dark:border-gray-800 transition-opacity ${isAvatarLoading ? 'opacity-50' : 'opacity-100'
                         }`}
@@ -166,6 +169,7 @@ export default function EditProfileModal({ isOpen, onClose }) {
                     <div className="absolute bottom-0 right-0">
                       <AvatarUpload
                         onUploadStart={() => setIsAvatarLoading(true)}
+                        onUpload={(url) => setProfileForm(prev => ({ ...prev, avatarURL: url }))}
                         onUploadEnd={() => setIsAvatarLoading(false)}
                       />
                     </div>
@@ -190,25 +194,25 @@ export default function EditProfileModal({ isOpen, onClose }) {
                   </div>
                 </div>
                 <div>
-                  <label className=" text-left block text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <label className="text-left block text-sm font-medium text-gray-700 dark:text-gray-300">
                     UserName
                   </label>
                   <div className="mt-1 relative rounded-md shadow-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center space-x-1 pointer-events-none">
                       <UserIcon className="h-5 w-5 text-gray-400" />
+                      <span className="text-gray-400">@</span>
                     </div>
                     <input
                       type="text"
                       name="username"
                       value={profileForm.username}
                       onChange={handleProfileChange}
-                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                      className="block w-full pl-14 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-700 focus:outline-none focus:ring-primary-500 focus:border-primary-500"
                       required
                     />
                   </div>
                 </div>
 
-                
 
                 <div className="flex justify-end space-x-3 pt-4">
                   <button

@@ -2,7 +2,8 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 
-const API_URL = 'http://localhost:5262/api/User';
+const API_URL = 'http://localhost:5262/api/Auth';
+const API_URL_USER = 'http://localhost:5262/api/User';
 const AuthContext = createContext()
 
 export function useAuth() {
@@ -90,6 +91,26 @@ function AuthProvider({ children }) {
     setUser(null)
     toast.success('Logged out successfully!')
   }
+  
+  const updateProfile = async (data) => {
+    try {
+      setLoading(true);
+      const response = await axios.patch(
+        `${API_URL_USER}/update`,
+        data,
+        { withCredentials: true }
+      );
+      toast.success("Profile updated!");
+      setUser(response.data);
+      return true;
+    } catch (error) {
+      console.error("Update profile failed", error.response?.data || error.message);
+      toast.error(error.response?.data?.message || "Failed to update profile");
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchProfile()
@@ -102,10 +123,10 @@ function AuthProvider({ children }) {
     register,
     logout,
     fetchProfile,
-    loginWithGoogle
+    loginWithGoogle,
+    updateProfile
   }
 
-  // ✅ hiển thị spinner nếu đang loading (lần đầu load trang)
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center">

@@ -83,7 +83,7 @@ export default function Profile() {
               <div className="relative -mt-16">
                 <div className="relative">
                   <img
-                    src={user?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
+                    src={user?.avatarURL || 'https://api.dicebear.com/7.x/avataaars/svg?seed=default'}
                     alt={user?.name}
                     className={`w-24 h-24 rounded-full border-4 border-white dark:border-gray-800 transition-opacity ${
                       isAvatarLoading ? 'opacity-50' : 'opacity-100'

@@ -1,10 +1,9 @@
 import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { CameraIcon } from '@heroicons/react/24/outline'
-import { useAuth } from '../contexts/AuthContext'
+import { uploadToCloudinary } from '../contexts/UploadtoCloudinary'
 
-export default function AvatarUpload({ onUploadStart, onUploadEnd }) {
-  const { updateAvatar } = useAuth()
+export default function AvatarUpload({ onUploadStart, onUpload, onUploadEnd }) {
   const [loading, setLoading] = useState(false)
 
   const onDrop = useCallback(async (acceptedFiles) => {
@@ -15,12 +14,15 @@ export default function AvatarUpload({ onUploadStart, onUploadEnd }) {
     onUploadStart?.()
 
     try {
-      await updateAvatar(file)
+      const url = await uploadToCloudinary(file)
+      onUpload?.(url) 
+    } catch (err) {
+      console.error("Upload error:", err)
     } finally {
       setLoading(false)
       onUploadEnd?.()
     }
-  }, [updateAvatar, onUploadStart, onUploadEnd])
+  }, [onUploadStart, onUpload, onUploadEnd])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -28,21 +30,21 @@ export default function AvatarUpload({ onUploadStart, onUploadEnd }) {
       'image/jpeg': ['.jpg', '.jpeg'],
       'image/png': ['.png']
     },
-    maxSize: 5 * 1024 * 1024, // 5MB
+    maxSize: 5 * 1024 * 1024,
     multiple: false
   })
 
   return (
     <div {...getRootProps()}>
       <input {...getInputProps()} />
-      <button 
+      <button
         type="button"
         disabled={loading}
         className={`p-1.5 rounded-full text-white transition-colors ${
-          loading 
-            ? 'bg-gray-400' 
-            : isDragActive 
-              ? 'bg-primary-600' 
+          loading
+            ? 'bg-gray-400'
+            : isDragActive
+              ? 'bg-primary-600'
               : 'bg-primary-500 hover:bg-primary-600'
         }`}
       >
@@ -50,4 +52,4 @@ export default function AvatarUpload({ onUploadStart, onUploadEnd }) {
       </button>
     </div>
   )
-} 
+}
